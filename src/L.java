@@ -19,6 +19,22 @@ public class L {
      * Debug Level
      */
 
+    public static void d(String tag) {
+        if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
+            try {
+                String logTag = new StringBuilder().append("[(")
+                        .append(lineNumber()).append(")")
+                        .append(tag)
+                        .append(" / ")
+                        .append(method())
+                        .append("] => ").toString();
+                Log.d(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void d(Object obj) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
@@ -66,6 +82,7 @@ public class L {
             }
         }
     }
+
     public static void d(Class<?> cls, String format, Object...args) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
@@ -143,6 +160,22 @@ public class L {
     /**
      * Info Level
      */
+
+    public static void i(String tag) {
+        if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
+            try {
+                String logTag = new StringBuilder().append("[(")
+                        .append(lineNumber()).append(")")
+                        .append(tag)
+                        .append(" / ")
+                        .append(method())
+                        .append("] => ").toString();
+                Log.i(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void i(Object obj) {
         if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
@@ -269,7 +302,21 @@ public class L {
 	/**
 	 * Warning Level
 	 */
-
+    public static void w(String tag) {
+        if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
+            try {
+                String logTag = new StringBuilder().append("[(")
+                        .append(lineNumber()).append(")")
+                        .append(tag)
+                        .append(" / ")
+                        .append(method())
+                        .append("] => ").toString();
+                Log.w(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void w(Object obj) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
@@ -286,6 +333,7 @@ public class L {
             }
         }
     }
+
     public static void w(Context context) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
             try {
@@ -391,6 +439,22 @@ public class L {
 	/**
 	 * Error Level
 	 */
+
+    public static void e(String tag) {
+        if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
+            try {
+                String logTag = new StringBuilder().append("[(")
+                        .append(lineNumber()).append(")")
+                        .append(tag)
+                        .append(" / ")
+                        .append(method())
+                        .append("] => ").toString();
+                Log.e(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static void e(Object object) {
         if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
