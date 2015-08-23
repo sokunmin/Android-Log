@@ -1,5 +1,4 @@
 /*  L.java
-
    Created by Chun-Ming Su on 8/20/15.
    Copyright (c) 2015 Chun-Ming Su. All rights reserved.
 */
@@ -11,29 +10,34 @@ import android.util.Log;
 
 public class L {
 	private static final int LEVEL = Log.VERBOSE;
-    private static final String DIVIDER = "----------";
+    private static final String DIVIDER = "--------------------";
 
 	public static String isNull(Object obj) {
 		StringBuilder result = new StringBuilder()
-				.append((obj == null)?"null":obj.getClass().getSimpleName()+" not null");
+				.append((obj == null)?"NULL":obj.getClass().getSimpleName()+" not NULL");
 		return result.toString();
 	}
-
-
 
     /**
      * Debug Level
      */
 
+    public static void d() {
+        if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
+            try {
+                String logTag = concatTag("", lineNumber(), method());
+                Log.d(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public static void d(String tag) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(tag)
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(tag, lineNumber(), method());
                 Log.d(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -44,12 +48,7 @@ public class L {
     public static void d(Object obj) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(obj.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(obj.getClass().getSimpleName(), lineNumber(), method());
                 Log.d(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -57,15 +56,10 @@ public class L {
         }
     }
 
-    public static void d(Context context) {
+    public static void d(Context c) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
                 Log.d(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -73,15 +67,10 @@ public class L {
         }
     }
 
-    public static void d(Class<?> cls) {
+    public static void d(Class<?> c) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(cls.getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
                 Log.d(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,14 +78,10 @@ public class L {
         }
     }
 
-    public static void d(Class<?> cls, String format, Object...args) {
+    public static void d(Class<?> c, String format, Object...args) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append(cls.getSimpleName())
-                                                    .append(" / ")
-                                                    .append(method())
-                                                    .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
                 Log.d(logTag, String.format(format, args));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -104,42 +89,21 @@ public class L {
         }
     }
 
-    public static void d(Context context, String format, Object...args) {
+    public static void d(Context c, String format, Object...args) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append(context.getClass().getSimpleName())
-                                                    .append(" / ")
-                                                    .append(method())
-                                                    .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
                 Log.d(logTag, String.format(format, args));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-
-
-    public static void d() {
-        if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
-            try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append(method())
-                                                    .append("] => ").toString();
-                Log.d(logTag, DIVIDER);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     public static void d(String format, Object...args) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append(method())
-                                                    .append("] => ").toString();
+                String logTag = concatTag("", lineNumber(), method());
                 Log.d(logTag, String.format(format, args));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -151,10 +115,7 @@ public class L {
     public static void d(int depth, String format, Object...args) {
         if (LEVEL <= Log.DEBUG && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append("/(").append(lineNumber(depth)).append(")")
-                                                    .append(method(depth))
-                                                    .append("] => ").toString();
+                String logTag = concatTagWithDepth("", lineNumber(), lineNumber(depth), method(depth));
                 Log.d(logTag, String.format(format, args));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -167,15 +128,21 @@ public class L {
      * Info Level
      */
 
+    public static void i() {
+        if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
+            try {
+                String logTag = concatTag("", lineNumber(), method());
+                Log.i(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void i(String tag) {
         if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(tag)
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(tag, lineNumber(), method());
                 Log.i(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -186,12 +153,7 @@ public class L {
     public static void i(Object obj) {
         if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(obj.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(obj.getClass().getSimpleName(), lineNumber(), method());
                 Log.i(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -199,15 +161,10 @@ public class L {
         }
     }
 
-    public static void i(Context context) {
+    public static void i(Context c) {
         if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
                 Log.i(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -215,15 +172,10 @@ public class L {
         }
     }
 
-    public static void i(Class<?> cls) {
+    public static void i(Class<?> c) {
         if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(cls.getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
                 Log.i(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -231,14 +183,10 @@ public class L {
         }
     }
 
-	public static void i(Class<?> cls, String format, Object...args) {
+	public static void i(Class<?> c, String format, Object...args) {
 		if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(cls.getSimpleName())
-                        .append(" / ")
-												   .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
 				Log.i(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -246,58 +194,33 @@ public class L {
 		}
 	}
 
-	/** print the class name &  the current method with message & line number */
-	public static void i(Context context, String format, Object...args) {
+	public static void i(Context c, String format, Object...args) {
 		if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
 				Log.i(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	/** print the current method name & line number */
-	public static void i() {
-		if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
-			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(method())
-												   .append("] => ").toString();
-				Log.i(logTag, DIVIDER);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/** print the current method with message & line number */
+
+
 	public static void i(String format, Object...args) {
 		if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                        .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag("", lineNumber(), method());
 				Log.i(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	/** print the specific method, which is assigned by depth, in the stack with message */
+
 	public static void i(int depth, String format, Object...args) {
 		if (LEVEL <= Log.INFO && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                        .append("/(").append(lineNumber(depth)).append(")")
-                        .append(method(depth))
-                        .append("] => ").toString();
+                String logTag = concatTagWithDepth("", lineNumber(), lineNumber(depth), method(depth));
 				Log.i(logTag, String.format(format, args));
             } catch (Exception e) {
 				e.printStackTrace();
@@ -308,15 +231,22 @@ public class L {
 	/**
 	 * Warning Level
 	 */
+
+    public static void w() {
+        if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
+            try {
+                String logTag = concatTag("", lineNumber(), method());
+                Log.w(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void w(String tag) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(tag)
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(tag, lineNumber(), method());
                 Log.w(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -327,12 +257,7 @@ public class L {
     public static void w(Object obj) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(obj.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(obj.getClass().getSimpleName(), lineNumber(), method());
                 Log.w(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -340,15 +265,10 @@ public class L {
         }
     }
 
-    public static void w(Context context) {
+    public static void w(Context c) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
                 Log.w(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -356,15 +276,10 @@ public class L {
         }
     }
 
-    public static void w(Class<?> cls) {
+    public static void w(Class<?> c) {
         if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(cls.getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
                 Log.w(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -372,14 +287,10 @@ public class L {
         }
     }
 
-	public static void w(Class<?> cls, String format, Object...args) {
+	public static void w(Class<?> c, String format, Object...args) {
 		if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(cls.getSimpleName())
-                                                    .append(" / ")
-												   .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
 				Log.w(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -387,28 +298,11 @@ public class L {
 		}
 	}
 
-	public static void w(Context context, String format, Object...args) {
+	public static void w(Context c, String format, Object...args) {
 		if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                                                    .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
 				Log.w(logTag, String.format(format, args));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void w() {
-		if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
-			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(method())
-												   .append("] => ").toString();
-				Log.w(logTag, DIVIDER);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -418,9 +312,7 @@ public class L {
 	public static void w(String format, Object...args) {
 		if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                    .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag("", lineNumber(), method());
 				Log.w(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -431,10 +323,7 @@ public class L {
 	public static void w(int depth, String format, Object...args) {
 		if (LEVEL <= Log.WARN && BuildConfig.DEBUG) {
 			try {
-                String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                        .append("/(").append(lineNumber(depth)).append(")")
-                                                    .append(method(depth))
-                                                    .append("] => ").toString();
+                String logTag = concatTagWithDepth("", lineNumber(), lineNumber(depth), method(depth));
 				Log.w(logTag, String.format(format, args));
             } catch (Exception e) {
 				e.printStackTrace();
@@ -446,15 +335,21 @@ public class L {
 	 * Error Level
 	 */
 
+    public static void e() {
+        if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
+            try {
+                String logTag = concatTag("", lineNumber(), method());
+                Log.e(logTag, DIVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void e(String tag) {
         if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(tag)
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(tag, lineNumber(), method());
                 Log.e(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -465,27 +360,17 @@ public class L {
     public static void e(Object object) {
         if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(object.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(object.getClass().getSimpleName(), lineNumber(), method());
                 Log.e(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    public static void e(Context context) {
+    public static void e(Context c) {
         if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
             try {
-                String logTag = new StringBuilder().append("[(")
-                        .append(lineNumber()).append(")")
-                        .append(context.getClass().getSimpleName())
-                        .append(" / ")
-                        .append(method())
-                        .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
                 Log.e(logTag, DIVIDER);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -493,14 +378,10 @@ public class L {
         }
     }
 
-	public static void e(Class<?> cls, String format, Object...args) {
+	public static void e(Class<?> c, String format, Object...args) {
 		if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(cls.getSimpleName())
-												   .append(" / ")
-												   .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getSimpleName(), lineNumber(), method());
 				Log.e(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -508,28 +389,11 @@ public class L {
 		}
 	}
 
-	public static void e(Context context, String format, Object...args) {
+	public static void e(Context c, String format, Object...args) {
 		if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(context.getClass().getSimpleName())
-												   .append(" / ")
-												   .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag(c.getClass().getSimpleName(), lineNumber(), method());
 				Log.e(logTag, String.format(format, args));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void e() {
-		if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
-			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(method())
-												   .append("] => ").toString();
-				Log.e(logTag, DIVIDER);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -539,9 +403,7 @@ public class L {
 	public static void e(String format, Object...args) {
 		if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-												   .append(method())
-												   .append("] => ").toString();
+                String logTag = concatTag("", lineNumber(), method());
 				Log.e(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -552,10 +414,7 @@ public class L {
 	public static void e(int depth, String format, Object...args) {
 		if (LEVEL <= Log.ERROR && BuildConfig.DEBUG) {
 			try {
-				String logTag = new StringBuilder().append("[(").append(lineNumber()).append(")")
-                                                   .append("/(").append(lineNumber(depth)).append(")")
-												   .append(method(depth))
-												   .append("] => ").toString();
+                String logTag = concatTagWithDepth("", lineNumber(), lineNumber(depth), method(depth));
 				Log.e(logTag, String.format(format, args));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -580,4 +439,30 @@ public class L {
 		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 		return new StringBuilder().append(stack[4+i].getLineNumber()).append("");
 	}
+
+    private static String concatTag(String tag, StringBuilder lineNumber, StringBuilder method) {
+        StringBuilder log = new StringBuilder();
+        if (tag == null || tag.equals("")) {
+            log.append("[(").append(lineNumber).append(")")
+                    .append(method)
+                    .append("] => \t");
+        } else {
+            log.append("[(").append(lineNumber).append(")")
+                    .append(tag)
+                    .append(" / ")
+                    .append(method)
+                    .append("] => \t");
+        }
+
+        return log.toString();
+    }
+
+    private static String concatTagWithDepth(String tag, StringBuilder lineNumber, StringBuilder depth, StringBuilder method) {
+        String logTag = new StringBuilder()
+                .append("[(").append(lineNumber).append(")")
+                .append(" / (").append(depth).append(")")
+                .append(method)
+                .append("] => \t").toString();
+        return logTag;
+    }
 }
